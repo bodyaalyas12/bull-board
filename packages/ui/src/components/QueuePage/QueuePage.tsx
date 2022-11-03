@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Store } from '../../hooks/useStore';
 import { JobCard } from '../JobCard/JobCard';
 import { QueueActions } from '../QueueActions/QueueActions';
@@ -20,6 +20,10 @@ export const QueuePage = ({
     return <section>Queue Not found</section>;
   }
 
+  useEffect(()=>{
+    console.log("queue")
+  },[queue.name])
+
   return (
     <section>
       <div className={s.stickyHeader}>
@@ -34,6 +38,8 @@ export const QueuePage = ({
                 allowRetries={queue.allowRetries}
               />
             )}
+            <input/>
+
           </div>
           <Pagination pageCount={queue.pagination.pageCount} />
         </div>
