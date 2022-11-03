@@ -1,6 +1,6 @@
 {
   "name": "@bull-board/ui",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Bull-Board's UI package",
   "keywords": [
     "bull",
@@ -27,7 +27,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@bull-board/api": "0.0.3",
+    "@bull-board/api": "0.0.4",
     "react-debounce-input": "^3.3.0"
   },
   "devDependencies": {
