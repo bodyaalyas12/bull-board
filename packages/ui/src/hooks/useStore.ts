@@ -25,12 +25,14 @@ export interface Store {
 export const useStore = (): Store => {
   const query = useQuery();
   const api = useApi();
-  const { pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions } = useSettingsStore(
-    ({ pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions }) => ({
+  const { pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions, filter,setSettings } = useSettingsStore(
+    ({ pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions,filter,setSettings }) => ({
       pollingInterval,
       jobsPerPage,
       confirmJobActions,
       confirmQueueActions,
+      filter,
+      setSettings
     })
   );
 
@@ -51,6 +53,7 @@ export const useStore = (): Store => {
         status: activeQueueName ? selectedStatuses[activeQueueName] : undefined,
         page: query.get('page') || '1',
         jobsPerPage,
+				filter
       })
       .then((data) => {
         setState({ data, loading: false });

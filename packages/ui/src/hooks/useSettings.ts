@@ -7,6 +7,7 @@ interface SettingsState {
   confirmQueueActions: boolean;
   confirmJobActions: boolean;
   setSettings: (settings: Partial<Omit<SettingsState, 'setSettings'>>) => void;
+  filter: string;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -17,6 +18,7 @@ export const useSettingsStore = create<SettingsState>()(
       confirmJobActions: true,
       confirmQueueActions: true,
       setSettings: (settings) => set(() => settings),
+      filter:''
     }),
     {
       name: 'board-settings',
