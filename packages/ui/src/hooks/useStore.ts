@@ -1,6 +1,6 @@
 import { AppJob } from '@bull-board/api/typings/app';
 import { GetQueuesResponse } from '@bull-board/api/typings/responses';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { QueueActions, SelectedStatuses } from '../../typings/app';
 import { useActiveQueueName } from './useActiveQueueName';
 import { useApi } from './useApi';
@@ -20,21 +20,23 @@ export interface Store {
   actions: QueueActions;
   selectedStatuses: SelectedStatuses;
   confirmProps: ConfirmApi['confirmProps'];
+  filter: string;
+  setFilter: Dispatch<SetStateAction<string>>;
 }
 
 export const useStore = (): Store => {
   const query = useQuery();
   const api = useApi();
-  const { pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions, filter,setSettings } = useSettingsStore(
-    ({ pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions,filter,setSettings }) => ({
+  const { pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions } = useSettingsStore(
+    ({ pollingInterval, jobsPerPage, confirmJobActions, confirmQueueActions }) => ({
       pollingInterval,
       jobsPerPage,
       confirmJobActions,
       confirmQueueActions,
-      filter,
-      setSettings
     })
   );
+
+  const [filter, setFilter] = useState<string>('');
 
   const [state, setState] = useState<State>({
     data: null,
@@ -53,7 +55,7 @@ export const useStore = (): Store => {
         status: activeQueueName ? selectedStatuses[activeQueueName] : undefined,
         page: query.get('page') || '1',
         jobsPerPage,
-				filter
+        filter,
       })
       .then((data) => {
         setState({ data, loading: false });
@@ -83,6 +85,9 @@ export const useStore = (): Store => {
   }
 
   useInterval(update, pollingInterval > 0 ? pollingInterval * 1000 : null, [selectedStatuses]);
+  useEffect(() => {
+    update();
+  }, [filter]);
 
   const promoteJob = (queueName: string) => (job: AppJob) =>
     withConfirmAndUpdate(
@@ -164,6 +169,8 @@ export const useStore = (): Store => {
       pauseQueue,
       resumeQueue,
     },
+    filter,
+    setFilter,
     confirmProps,
     selectedStatuses,
   };

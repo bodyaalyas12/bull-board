@@ -85,15 +85,13 @@ async function getAppQueues(
         ? await queue.getJobs(status, pagination.range.start, pagination.range.end)
         : [];
 
-      console.log(jobs)
       let filteredJobs = jobs
       if(query.filter){
         filteredJobs = jobs.filter((job)=>{
         	const jobObj = job.toJSON()
-          return jobObj.name.includes(query.filter) || jobObj.id
+          return jobObj.name.toLowerCase().includes(query.filter.toLowerCase()) || String(jobObj.id).includes(query.filter)
         })
       }
-      console.log(filteredJobs)
 
       const description = queue.getDescription() || undefined;
 

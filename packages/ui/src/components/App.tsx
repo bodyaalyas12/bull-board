@@ -13,7 +13,7 @@ import { QueueTitle } from './QueueTitle/QueueTitle';
 
 export const App = () => {
   useScrollTopOnNav();
-  const { state, actions, selectedStatuses, confirmProps } = useStore();
+  const { state, actions, selectedStatuses, confirmProps, filter, setFilter } = useStore();
   const activeQueue = useActiveQueue(state.data);
 
   return (
@@ -36,6 +36,8 @@ export const App = () => {
                       queue={activeQueue || undefined}
                       actions={actions}
                       selectedStatus={selectedStatuses}
+                      filter={filter}
+                      setFilter={setFilter}
                     />
                   )}
                 />

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { Store } from '../../hooks/useStore';
 import { JobCard } from '../JobCard/JobCard';
 import { QueueActions } from '../QueueActions/QueueActions';
@@ -6,30 +6,41 @@ import { StatusMenu } from '../StatusMenu/StatusMenu';
 import s from './QueuePage.module.css';
 import { AppQueue } from '@bull-board/api/typings/app';
 import { Pagination } from '../Pagination/Pagination';
+import { DebounceInput } from 'react-debounce-input';
 
 export const QueuePage = ({
   selectedStatus,
   actions,
   queue,
+  setFilter,
 }: {
   queue: AppQueue | undefined;
   actions: Store['actions'];
   selectedStatus: Store['selectedStatuses'];
+  filter: string;
+  setFilter: Dispatch<SetStateAction<string>>;
 }) => {
+  const onFilterChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    setFilter(target.value);
+  };
   if (!queue) {
     return <section>Queue Not found</section>;
   }
-
-  useEffect(()=>{
-    console.log("queue")
-  },[queue.name])
 
   return (
     <section>
       <div className={s.stickyHeader}>
         <StatusMenu queue={queue} actions={actions} />
         <div className={s.actionContainer}>
-          <div>
+          <div className={s.actionRow}>
+            <div className={s.filterInput}>
+              <DebounceInput
+                placeholder={'Filter jobs'}
+                onChange={onFilterChange}
+                debounceTimeout={500}
+                minLength={2}
+              />
+            </div>
             {queue.jobs.length > 0 && !queue.readOnlyMode && (
               <QueueActions
                 queue={queue}
@@ -38,8 +49,6 @@ export const QueuePage = ({
                 allowRetries={queue.allowRetries}
               />
             )}
-            <input/>
-
           </div>
           <Pagination pageCount={queue.pagination.pageCount} />
         </div>
