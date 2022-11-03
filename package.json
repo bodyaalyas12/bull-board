@@ -77,16 +77,14 @@
   },
   "release-it": {
     "plugins": {
-      "release-it-yarn-workspaces": true
+      "release-it-yarn-workspaces": {
+        "skipCheck": true
+      }
     },
     "git": {
       "changelog": "npx auto-changelog --stdout --commit-limit false -u --template https://raw.githubusercontent.com/release-it/release-it/master/templates/changelog-compact.hbs"
     },
     "hooks": {
-      "before:init": [
-        "yarn lint",
-        "yarn test"
-      ],
       "after:bump": [
         "npx auto-changelog -p",
         "yarn build"
