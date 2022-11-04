@@ -81,13 +81,12 @@ async function getAppQueues(
       const isPaused = await queue.isPaused();
 
       let pagination, jobs;
-      if (query.filter && query.status !== 'latest') {
+      if (query.filter && query.status !== 'latest' && isActiveQueue) {
         const start = (currentPage - 1) * jobsPerPage;
         const end = start + jobsPerPage - 1;
         const queueJobs = await queue.getJobs(status);
         jobs = queueJobs.filter((job) => {
           const jobObj = job.toJSON();
-          console.log(jobObj);
           return (
             jobObj.name.toLowerCase().includes(query.filter.toLowerCase()) ||
             String(jobObj.id).includes(query.filter)
