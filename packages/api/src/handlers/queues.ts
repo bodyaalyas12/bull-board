@@ -80,17 +80,35 @@ async function getAppQueues(
       const counts = await queue.getJobCounts(...allStatuses);
       const isPaused = await queue.isPaused();
 
-      const pagination = getPagination(status, counts, currentPage, jobsPerPage);
-      const jobs = isActiveQueue
-        ? await queue.getJobs(status, pagination.range.start, pagination.range.end)
-        : [];
-
-      let filteredJobs = jobs
-      if(query.filter){
-        filteredJobs = jobs.filter((job)=>{
-        	const jobObj = job.toJSON()
-          return jobObj.name.toLowerCase().includes(query.filter.toLowerCase()) || String(jobObj.id).includes(query.filter)
-        })
+      let pagination, jobs;
+      if (query.filter && query.status !== 'latest') {
+        const start = (currentPage - 1) * jobsPerPage;
+        const end = start + jobsPerPage - 1;
+        const queueJobs = await queue.getJobs(status);
+        jobs = queueJobs.filter((job) => {
+          const jobObj = job.toJSON();
+          console.log(jobObj);
+          return (
+            jobObj.name.toLowerCase().includes(query.filter.toLowerCase()) ||
+            String(jobObj.id).includes(query.filter)
+          );
+        });
+        const pageCount = Math.ceil(jobs.length / jobsPerPage);
+        pagination = {
+          pageCount,
+          range: {
+            start,
+            end,
+          },
+        };
+        if (start < jobs.length) {
+          jobs = jobs.slice(start, end);
+        }
+      } else {
+        pagination = getPagination(status, counts, currentPage, jobsPerPage);
+        jobs = isActiveQueue
+          ? await queue.getJobs(status, pagination.range.start, pagination.range.end)
+          : [];
       }
 
       const description = queue.getDescription() || undefined;
@@ -99,7 +117,7 @@ async function getAppQueues(
         name: queueName,
         description,
         counts: counts as Record<Status, number>,
-        jobs: filteredJobs.filter(Boolean).map((job) => formatJob(job, queue)),
+        jobs: jobs.filter(Boolean).map((job) => formatJob(job, queue)),
         pagination,
         readOnlyMode: queue.readOnlyMode,
         allowRetries: queue.allowRetries,

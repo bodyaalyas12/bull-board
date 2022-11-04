@@ -13,6 +13,7 @@ export const QueuePage = ({
   actions,
   queue,
   setFilter,
+  filter,
 }: {
   queue: AppQueue | undefined;
   actions: Store['actions'];
@@ -33,14 +34,17 @@ export const QueuePage = ({
         <StatusMenu queue={queue} actions={actions} />
         <div className={s.actionContainer}>
           <div className={s.actionRow}>
-            <div className={s.filterInput}>
-              <DebounceInput
-                placeholder={'Filter jobs'}
-                onChange={onFilterChange}
-                debounceTimeout={500}
-                minLength={2}
-              />
-            </div>
+            {selectedStatus[queue.name] !== 'latest' && (
+              <div className={s.filterInput}>
+                <DebounceInput
+                  placeholder={'Filter jobs'}
+                  onChange={onFilterChange}
+                  debounceTimeout={500}
+                  minLength={2}
+                  value={filter}
+                />
+              </div>
+            )}
             {queue.jobs.length > 0 && !queue.readOnlyMode && (
               <QueueActions
                 queue={queue}
